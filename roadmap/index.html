@@ -1,23 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Roadmap</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a; /* Deep Navy */
+            color: #f1f5f9;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+        }
+
+        h1 {
+            color: #38bdf8; /* Sky Blue */
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 15px 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Subtle styling for completed vs pending items */
+        .done { color: #10b981; } /* Emerald */
+        .active { color: #fbbf24; } /* Amber */
+    </style>
 </head>
 <body>
 
-<h1>🚀 AI Career & Mental Wellness Assistant</h1>
+<div class="container">
+    <h1>🚀 AI Career & Mental Wellness Assistant</h1>
+    <h2>Project Roadmap</h2>
 
-<h2>Project Roadmap</h2>
-
-<ul>
-    <li>✅ Step 1: Project Setup (GitHub + Structure)</li>
-    <li>🔄 Step 2: Resume Parsing (In Progress)</li>
-    <li>⏳ Step 3: Skill Extraction</li>
-    <li>⏳ Step 4: Job Matching</li>
-    <li>⏳ Step 5: Backend API</li>
-    <li>⏳ Step 6: Frontend UI</li>
-    <li>⏳ Step 7: Deployment</li>
-</ul>
+    <ul>
+        <li class="done"><span>✅</span> Step 1: Project Setup (GitHub + Structure)</li>
+        <li class="active"><span>🔄</span> Step 2: Resume Parsing (In Progress)</li>
+        <li><span>⏳</span> Step 3: Skill Extraction</li>
+        <li><span>⏳</span> Step 4: Job Matching</li>
+        <li><span>⏳</span> Step 5: Backend API</li>
+        <li><span>⏳</span> Step 6: Frontend UI</li>
+        <li><span>⏳</span> Step 7: Deployment</li>
+    </ul>
+</div>
 
 </body>
 </html>
