@@ -6,6 +6,7 @@ export default function App() {
   const [file, setFile] = useState(null)
   const [targetRole, setTargetRole] = useState('Software Engineer')
   const [resumeData, setResumeData] = useState(null)
+  const [skillGap, setSkillGap] = useState(null)
   const [chatInput, setChatInput] = useState('What should I focus on to improve my career profile?')
   const [chatReply, setChatReply] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,6 +34,23 @@ export default function App() {
       }
 
       setResumeData(data.resume)
+      const skills = data.resume?.skills || []
+
+      const gapResponse = await fetch(`${API_BASE}/skills/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          skills,
+          target_role: targetRole,
+        }),
+      })
+
+      const gapData = await gapResponse.json()
+      if (!gapResponse.ok) {
+        throw new Error(gapData.detail || 'Skill gap analysis failed')
+      }
+
+      setSkillGap(gapData)
       setLoading(false)
     } catch (error) {
       setLoading(false)
@@ -203,6 +221,41 @@ export default function App() {
               </div>
             )}
           </div>
+        </section>
+
+        <section style={{ marginTop: '24px', background: 'rgba(15, 23, 42, 0.75)', border: '1px solid rgba(148, 163, 184, 0.2)', borderRadius: '20px', padding: '24px' }}>
+          <h2 style={{ marginTop: 0 }}>Role Match Score</h2>
+          {skillGap ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '18px' }}>
+              <div style={{ background: 'rgba(15, 118, 110, 0.15)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(45, 212, 191, 0.2)' }}>
+                <p style={{ margin: '0 0 8px', color: '#99f6e4' }}>Match Score</p>
+                <h3 style={{ margin: 0, fontSize: '2rem' }}>{skillGap.match_score}%</h3>
+              </div>
+
+              <div style={{ background: 'rgba(59, 130, 246, 0.12)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
+                <p style={{ margin: '0 0 8px', color: '#bfdbfe' }}>Matched Skills</p>
+                <p style={{ margin: 0, lineHeight: 1.6 }}>{skillGap.matched_skills.length ? skillGap.matched_skills.join(', ') : 'None detected'}</p>
+              </div>
+
+              <div style={{ background: 'rgba(168, 85, 247, 0.12)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(196, 181, 253, 0.2)' }}>
+                <p style={{ margin: '0 0 8px', color: '#ddd6fe' }}>Missing Skills</p>
+                <p style={{ margin: 0, lineHeight: 1.6 }}>{skillGap.missing_skills.length ? skillGap.missing_skills.join(', ') : 'No major gaps'}</p>
+              </div>
+            </div>
+          ) : (
+            <p style={{ color: '#94a3b8' }}>Upload a resume to see your role match score and missing skills.</p>
+          )}
+
+          {skillGap?.recommendations?.length && (
+            <div style={{ marginTop: '18px' }}>
+              <h3>Recommendations</h3>
+              <ul style={{ color: '#dbeafe', lineHeight: 1.9, paddingLeft: '20px' }}>
+                {skillGap.recommendations.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       </div>
     </main>
