@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.config import OPENAI_API_KEY
+from config import OPENAI_API_KEY
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
