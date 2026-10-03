@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
-from backend.services.resume_parser import extract_resume_data
+from services.resume_parser import extract_resume_data
 
 router = APIRouter(prefix="/resume", tags=["resume"])
 
