@@ -1,3 +1,3 @@
-# CareerPath Pro Docs
+# CareerPath Pro docs
 
-This folder will contain architecture notes, API docs, setup instruction, and deployment guide.
+This directory will contain product notes, API documentation, architecture write-ups, and setup guidance.

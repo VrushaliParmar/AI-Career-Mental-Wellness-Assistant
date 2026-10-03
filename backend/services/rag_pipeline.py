@@ -1,6 +1,5 @@
 from langchain_openai import ChatOpenAI
 from langchain.chains import RetrievalQA
-from langchain.vectorstores import FAISS
 
 
 def build_rag_chain(vector_store, llm_model="gpt-4o-mini"):
