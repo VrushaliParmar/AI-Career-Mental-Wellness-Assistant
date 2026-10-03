@@ -15,3 +15,16 @@ def normalize_text(raw_text: str) -> str:
     text = raw_text.replace("\r", " ")
     text = re.sub(r"\s+", " ", text)
     return text.strip()
+
+
+def extract_resume_data(file_path: str):
+    """Extract resume data from PDF file."""
+    text_data = extract_text_from_pdf(file_path)
+    return {
+        "success": True,
+        "text": text_data.get("text", ""),
+        "file_path": file_path,
+        "skills": [],
+        "education": [],
+        "experience": [],
+    }
