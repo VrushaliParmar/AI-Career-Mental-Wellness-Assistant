@@ -1,4 +1,4 @@
-# Careerpath Pro
+# CareerPath Pro
 
 > AI-powered career intelligence platform that helps students and early-career professionals analyze resumes, detect skill gaps, and get personalized career guidance through a modern retrieval-augmented generation (RAG) workflow.
 
