@@ -1,11 +1,14 @@
 from typing import Optional
+import logging
 import os
+import re
 
 from fastapi import APIRouter, HTTPException
 from google import genai
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+logger = logging.getLogger(__name__)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
@@ -34,7 +37,6 @@ async def chat_message(request: ChatRequest):
     resume_context = (request.resume_context or "").strip()
     # Avoid sending contact information from a resume when it is not relevant to career advice.
     if resume_context:
-        import re
         resume_context = re.sub(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", "[email removed]", resume_context)
         resume_context = re.sub(r"(?:\+?\d[\d().\s-]{7,}\d)", "[phone removed]", resume_context)
 
@@ -58,10 +60,12 @@ async def chat_message(request: ChatRequest):
         if not reply:
             raise RuntimeError("Gemini returned an empty response")
     except Exception as exc:
-        # Do not expose provider details or credentials to clients.
+        # Log enough to diagnose provider errors, while redacting the secret defensively.
+        safe_error = str(exc).replace(GEMINI_API_KEY, "[redacted]")
+        logger.error("Gemini request failed (%s): %s", type(exc).__name__, safe_error)
         raise HTTPException(
             status_code=502,
-            detail="The AI provider could not generate a response. Check the Gemini API key, model setting, and backend logs.",
+            detail="The AI provider could not generate a response. Check the backend service logs for the Gemini error.",
         ) from exc
 
     return {
