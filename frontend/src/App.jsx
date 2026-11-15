@@ -2,9 +2,7 @@ import { useState } from 'react'
 
 // Vite exposes VITE_* values at build time. Keep localhost as a development-only
 // default so a production build never accidentally calls the visitor's machine.
-const API_BASE = (
-  import.meta.env.VITE_API_BASE || (import.meta.env.DEV ? 'http://localhost:8000' : '')
-).replace(/\/+$/, '')
+const API_BASE = (import.meta.env.VITE_API_BASE || (import.meta.env.DEV ? 'http://localhost:8000' : '')).replace(/\/+$/, '')
 
 export default function App() {
   const [file, setFile] = useState(null)
