@@ -199,3 +199,4 @@ GitHub: https://github.com/VrushaliParmar
 ---
 
 > CareerPath Pro is designed as a powerful AI career platform prototype that blends resume analysis, job-fit scoring, and intelligent guidance into a single, modern experience.
+<!-- Trigger fresh Vercel deployment -->
