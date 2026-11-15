@@ -1,6 +1,10 @@
 import { useState } from 'react'
 
-const API_BASE = 'http://localhost:8000'
+// Vite exposes VITE_* values at build time. Keep localhost as a development-only
+// default so a production build never accidentally calls the visitor's machine.
+const API_BASE = (
+  import.meta.env.VITE_API_BASE || (import.meta.env.DEV ? 'http://localhost:8000' : '')
+).replace(/\/+$/, '')
 
 export default function App() {
   const [file, setFile] = useState(null)
@@ -12,6 +16,11 @@ export default function App() {
   const [loading, setLoading] = useState(false)
 
   const handleResumeUpload = async () => {
+    if (!API_BASE) {
+      alert('Backend URL is not configured. Set VITE_API_BASE in your Vercel project environment variables, then redeploy.')
+      return
+    }
+
     if (!file) {
       alert('Please choose a PDF resume first.')
       return
@@ -59,6 +68,11 @@ export default function App() {
   }
 
   const handleChat = async () => {
+    if (!API_BASE) {
+      alert('Backend URL is not configured. Set VITE_API_BASE in your Vercel project environment variables, then redeploy.')
+      return
+    }
+
     if (!chatInput.trim()) {
       alert('Please enter a question for the career assistant.')
       return
