@@ -59,11 +59,14 @@ export default function App() {
       return
     }
 
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 45000)
     setLoading(true)
     try {
       const response = await fetch(`${API_BASE}/chat/message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           user_id: 'demo-user',
           message: chatInput,
@@ -75,8 +78,13 @@ export default function App() {
       if (!response.ok) throw new Error(data.detail || 'Chat failed')
       setChatReply(data.reply)
     } catch (error) {
-      alert(error.message || 'Chat failed')
+      if (error.name === 'AbortError') {
+        alert('The career assistant took too long to respond. Please try again.')
+      } else {
+        alert(error.message || 'Chat failed')
+      }
     } finally {
+      clearTimeout(timeoutId)
       setLoading(false)
     }
   }
@@ -112,14 +120,14 @@ export default function App() {
             <input type="file" accept=".pdf,application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} style={{ display: 'block', width: '100%', marginBottom: '16px', color: '#e2e8f0' }} />
             <label htmlFor="target-role" style={{ display: 'block', marginBottom: '8px', color: '#cbd5e1' }}>Target role</label>
             <input id="target-role" value={targetRole} onChange={(e) => setTargetRole(e.target.value)} placeholder="Ex: Software Engineer" style={{ ...inputStyle, marginBottom: '18px' }} />
-            <button disabled={loading} onClick={handleResumeUpload} style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px 20px', fontWeight: 700, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+            <button disabled={loading} onClick={handleResumeUpload} style={{ background: 'linear-gradient(135deg, #2563eb, #7c3aed)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px 18px', cursor: loading ? 'wait' : 'pointer' }}>
               {loading ? 'Analyzing...' : 'Analyze Resume'}
             </button>
           </div>
           <div style={panelStyle}>
             <h2 style={{ marginTop: 0 }}>Quick Overview</h2>
             <div style={{ display: 'grid', gap: '12px' }}>
-              {['Resume Analysis', 'RAG Career Chat', 'Skill Gap Tracking', 'Job Insights'].map((item) => <div key={item} style={{ background: 'rgba(30, 41, 59, 0.8)', borderRadius: '12px', padding: '12px 14px', border: '1px solid rgba(148, 163, 184, 0.15)' }}>{item}</div>)}
+              {['Resume Analysis', 'RAG Career Chat', 'Skill Gap Tracking', 'Job Insights'].map((item) => <div key={item} style={{ background: 'rgba(30, 41, 59, 0.8)', borderRadius: '12px', padding: '14px' }}>{item}</div>)}
             </div>
           </div>
         </section>
@@ -140,8 +148,10 @@ export default function App() {
           <div style={panelStyle}>
             <h2 style={{ marginTop: 0 }}>Career Assistant</h2>
             <textarea value={chatInput} onChange={(e) => setChatInput(e.target.value)} rows={6} style={{ ...inputStyle, resize: 'vertical' }} />
-            <button disabled={loading} onClick={handleChat} style={{ marginTop: '16px', background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px 20px', fontWeight: 700, cursor: loading ? 'wait' : 'pointer' }}>{loading ? 'Thinking...' : 'Ask Career Assistant'}</button>
-            {chatReply && <div style={{ marginTop: '18px', padding: '16px', borderRadius: '12px', background: 'rgba(20, 184, 166, 0.08)', border: '1px solid rgba(20, 184, 166, 0.2)' }}><strong>AI Response:</strong><p style={{ marginBottom: 0, lineHeight: 1.8, color: '#dbeafe' }}>{chatReply}</p></div>}
+            <button disabled={loading} onClick={handleChat} style={{ marginTop: '16px', background: 'linear-gradient(135deg, #0ea5e9, #14b8a6)', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px 18px', cursor: loading ? 'wait' : 'pointer' }}>
+              {loading ? 'Thinking...' : 'Ask Career Assistant'}
+            </button>
+            {chatReply && <div style={{ marginTop: '18px', padding: '16px', borderRadius: '12px', background: 'rgba(20, 184, 166, 0.08)', border: '1px solid rgba(20, 184, 166, 0.2)' }}><strong>AI Career Assistant</strong><p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{chatReply}</p></div>}
           </div>
         </section>
 
@@ -152,7 +162,7 @@ export default function App() {
             <div><p>Matched Skills</p><p>{skillGap.matched_skills?.length ? skillGap.matched_skills.join(', ') : 'None detected'}</p></div>
             <div><p>Missing Skills</p><p>{skillGap.missing_skills?.length ? skillGap.missing_skills.join(', ') : 'No major gaps'}</p></div>
           </div> : <p style={{ color: '#94a3b8' }}>Upload a resume to see your role match score and missing skills.</p>}
-          {skillGap?.recommendations?.length > 0 && <div style={{ marginTop: '18px' }}><h3>Recommendations</h3><ul style={{ color: '#dbeafe', lineHeight: 1.9, paddingLeft: '20px' }}>{skillGap.recommendations.map((item, index) => <li key={index}>{item}</li>)}</ul></div>}
+          {skillGap?.recommendations?.length > 0 && <div style={{ marginTop: '18px' }}><h3>Recommendations</h3><ul style={{ color: '#dbeafe', lineHeight: 1.9, paddingLeft: '20px' }}>{skillGap.recommendations.map((item) => <li key={item}>{item}</li>)}</ul></div>}
         </section>
       </div>
     </main>

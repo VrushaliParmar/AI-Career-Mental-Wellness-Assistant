@@ -1,4 +1,5 @@
 from typing import Optional
+import asyncio
 import logging
 import os
 import re
@@ -12,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+GEMINI_TIMEOUT_SECONDS = 30
 
 
 class ChatRequest(BaseModel):
@@ -52,13 +54,22 @@ async def chat_message(request: ChatRequest):
 
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
-        response = await client.aio.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=prompt,
+        response = await asyncio.wait_for(
+            client.aio.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+            ),
+            timeout=GEMINI_TIMEOUT_SECONDS,
         )
         reply = (response.text or "").strip()
         if not reply:
             raise RuntimeError("Gemini returned an empty response")
+    except asyncio.TimeoutError as exc:
+        logger.warning("Gemini request timed out after %s seconds", GEMINI_TIMEOUT_SECONDS)
+        raise HTTPException(
+            status_code=504,
+            detail="The AI response took too long. Please try again.",
+        ) from exc
     except Exception as exc:
         # Log enough to diagnose provider errors, while redacting the secret defensively.
         safe_error = str(exc).replace(GEMINI_API_KEY, "[redacted]")
