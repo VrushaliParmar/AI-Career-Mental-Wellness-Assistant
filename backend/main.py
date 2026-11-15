@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers.resume import router as resume_router
+
 from routers.chat import router as chat_router
+from routers.resume import router as resume_router
+from routers.skills import router as skills_router
 
 app = FastAPI(
     title="CareerPath Pro API",
@@ -19,10 +21,13 @@ app.add_middleware(
 
 app.include_router(resume_router)
 app.include_router(chat_router)
+app.include_router(skills_router)
+
 
 @app.get("/health")
 def health_check():
     return {"status": "ok", "service": "CareerPath Pro API"}
+
 
 @app.get("/")
 def root():
